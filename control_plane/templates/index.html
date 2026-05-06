@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FaaS Architecture Image Resizer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="app-wrapper">
+        <header>
+            <h1>FaaS Image Resizer</h1>
+        </header>
+
+        <main class="container">
+            <form action="/run" method="post" enctype="multipart/form-data" id="process-form">
+                <!-- Initial Upload State -->
+                <div id="upload-view" class="view active">
+                    <div class="drop-zone" id="drop-zone">
+                        <div class="drop-zone-content">
+                            <svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <p class="drop-zone-text">DROP YOUR IMAGE HERE</p>
+                            <p class="drop-zone-subtext">OR</p>
+                            <label for="image" class="file-label">upload files</label>
+                            <input type="file" name="image" id="image" accept="image/*" required hidden>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Configuration State -->
+                <div id="config-view" class="view">
+                    <div class="editor-layout">
+                        <div class="sidebar">
+                            <div class="form-group">
+                                <label for="function">Operation</label>
+                                <select name="function" id="function">
+                                    <option value="resize">Resize</option>
+                                    <option value="grayscale">Grayscale</option>
+                                </select>
+                            </div>
+
+                            <div id="resize-options">
+                                <div class="form-group">
+                                    <label for="width">Width (px)</label>
+                                    <input type="number" name="width" id="width" value="466">
+                                </div>
+                                <div class="form-group">
+                                    <label for="height">Height (px)</label>
+                                    <input type="number" name="height" id="height" value="548">
+                                </div>
+                            </div>
+
+                            <div class="actions">
+                                <button type="submit" class="primary-btn">Process Image</button>
+                                <button type="button" id="back-btn" class="secondary-btn">Change Image</button>
+                            </div>
+                        </div>
+
+                        <div class="preview-area">
+                            <div class="preview-card">
+                                <img id="image-preview" src="#" alt="Preview" />
+                                <div class="image-info">
+                                    <span id="dimensions-badge">0 × 0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </main>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('image');
+        const uploadView = document.getElementById('upload-view');
+        const configView = document.getElementById('config-view');
+        const previewImg = document.getElementById('image-preview');
+        const backBtn = document.getElementById('back-btn');
+        const funcSelect = document.getElementById('function');
+        const resizeOptions = document.getElementById('resize-options');
+        const dimBadge = document.getElementById('dimensions-badge');
+        const widthInput = document.getElementById('width');
+        const heightInput = document.getElementById('height');
+
+        // Toggle resize options
+        funcSelect.addEventListener('change', function() {
+            resizeOptions.style.display = this.value === 'resize' ? 'block' : 'none';
+        });
+
+        // Handle file selection
+        fileInput.addEventListener('change', handleFile);
+
+        // Drag and drop events
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('drag-over');
+        });
+
+        ['dragleave', 'dragend'].forEach(type => {
+            dropZone.addEventListener(type, () => {
+                dropZone.classList.remove('drag-over');
+            });
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('drag-over');
+            const files = e.dataTransfer.files;
+            if (files.length) {
+                fileInput.files = files;
+                handleFile();
+            }
+        });
+
+        function handleFile() {
+            const file = fileInput.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    previewImg.src = e.target.result;
+                    
+                    // Get natural dimensions
+                    const img = new Image();
+                    img.onload = function() {
+                        widthInput.value = img.width;
+                        heightInput.value = img.height;
+                        updateBadge();
+                    };
+                    img.src = e.target.result;
+                    
+                    uploadView.classList.remove('active');
+                    configView.classList.add('active');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateBadge() {
+            dimBadge.textContent = `${widthInput.value} × ${heightInput.value}`;
+        }
+
+        [widthInput, heightInput].forEach(input => {
+            input.addEventListener('input', updateBadge);
+        });
+
+        backBtn.addEventListener('click', () => {
+            configView.classList.remove('active');
+            uploadView.classList.add('active');
+            fileInput.value = '';
+        });
+    </script>
+</body>
+</html>
