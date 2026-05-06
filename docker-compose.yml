@@ -1,0 +1,24 @@
+version: "3.9"
+
+services:
+  control_plane:
+    build: ./control_plane
+    ports:
+      - "8000:8000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # lets the app control Docker
+      - ./mnt:/app/mnt # shared directory for functions and temp files
+    environment:
+      - PYTHONUNBUFFERED=1
+      - HOST_MNT_PATH=${PWD}/mnt
+    restart: unless-stopped
+
+  # We define the runner here so we can build it, 
+  # but the control plane will run it dynamically.
+  runner:
+    build: ./runner
+    image: faas-runner
+    # This service doesn't need to run continuously
+    deploy:
+      replicas: 0
+
