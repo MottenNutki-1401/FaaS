@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>MiniFaaS</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+<body>
+
+    <h1>MiniFaaS Platform</h1>
+
+    <hr>
+
+    <h2>Deploy Function</h2>
+
+    <!-- Upload form -->
+    <form
+        action="/deploy"
+        method="post"
+        enctype="multipart/form-data"
+    >
+
+        <!-- File picker -->
+        <input
+            type="file"
+            name="file"
+        >
+
+        <br><br>
+
+        <button type="submit">
+            Deploy Function
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>Uploaded Functions</h2>
+
+    <!-- Loop through uploaded functions -->
+    {% for file in files %}
+
+        <div class="function-card">
+
+            <!-- Show filename -->
+            <b>{{ file }}</b>
+
+            <br><br>
+
+            <!-- Execute button -->
+            <a href="/execute/{{ file }}">
+                Execute Function
+            </a>
+
+        </div>
+
+    {% endfor %}
+
+</body>
+
+</html>
