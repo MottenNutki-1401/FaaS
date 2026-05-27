@@ -14,95 +14,300 @@
 
 <body>
 
-    <h1>MiniFaaS Platform</h1>
+    <div class="main-container">
 
-    <hr>
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
 
-    <h2>Deploy Function</h2>
+            <h1>MiniFaaS Platform</h1>
 
-    <!-- Upload form -->
-    <form
-        action="/deploy"
-        method="post"
-        enctype="multipart/form-data"
-    >
 
-        <!-- File picker -->
-        <input
-            type="file"
-            name="file"
-        >
+            <!-- DEPLOY -->
+            <div class="glass-box">
 
-        <br><br>
+                <h2>Deploy Function</h2>
 
-        <button type="submit">
-            Deploy Function
-        </button>
+                <form id="upload-form">
 
-    </form>
+                    <input
+                        type="file"
+                        name="file"
+                        id="file-input"
+                    >
 
-    <hr>
+                    <button type="submit">
 
-    <h2>Uploaded Functions</h2>
-    <hr>
+                        Deploy Function
 
-<div class="dashboard-layout">
+                    </button>
 
-    <!-- LEFT SIDE -->
-    <div>
-
-        <h2>Execution Monitor</h2>
-
-        {% for log in logs %}
-
-            <div class="log-card">
-
-                <p>
-                    <b>Function:</b>
-                    {{ log.function }}
-                </p>
-
-                <p>
-                    <b>Status Code:</b>
-                    {{ log.returncode }}
-                </p>
-
-                <p>
-                    <b>Output:</b>
-                    {{ log.stdout }}
-                </p>
-
-                <p>
-                    <b>Error:</b>
-                    {{ log.stderr }}
-                </p>
+                </form>
 
             </div>
 
-        {% endfor %}
 
-    </div>
+            <!-- FUNCTIONS -->
+            <div class="glass-box">
 
-</div>
+                <h2>Uploaded Functions</h2>
 
-    <!-- Loop through uploaded functions -->
-    {% for file in files %}
+                <div id="functions-box">
 
-        <div class="function-card">
+                </div>
 
-            <!-- Show filename -->
-            <b>{{ file }}</b>
-
-            <br><br>
-
-            <!-- Execute button -->
-            <a href="/execute/{{ file }}">
-                Execute Function
-            </a>
+            </div>
 
         </div>
 
-    {% endfor %}
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+
+            <!-- EXECUTION LOGS -->
+            <div class="glass-box">
+
+                <h2>Execution Logs</h2>
+
+                <div id="logs-box">
+
+                </div>
+
+            </div>
+
+
+            <!-- LIVE CONTAINERS -->
+            <div class="glass-box">
+
+                <h2>Live Runtime Activity</h2>
+
+                <div id="containers-box">
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script defer>
+
+        //fetch dashboard data
+        async function updateDashboard() {
+
+            const response = await fetch(
+                "/status"
+            )
+
+            const data = await response.json()
+
+
+            //FUNCTIONS
+            const functionsBox =
+                document.getElementById(
+                    "functions-box"
+                )
+
+            functionsBox.innerHTML = ""
+
+
+            data.files.forEach(file => {
+
+                const isRunning =
+                    data.running.includes(file)
+
+                functionsBox.innerHTML += `
+
+                    <div class="function-card">
+
+                        <div>
+
+                            <b>${file}</b>
+
+                            <br>
+
+                            ${
+                                isRunning
+
+                                ? "<span class='running'>RUNNING</span>"
+
+                                : "<span class='idle'>IDLE</span>"
+                            }
+
+                        </div>
+
+                        <button
+                            onclick="executeFunction('${file}')"
+                        >
+
+                            Execute
+
+                        </button>
+
+                    </div>
+
+                `
+            })
+
+
+            //LOGS
+            const logsBox =
+                document.getElementById(
+                    "logs-box"
+                )
+
+            logsBox.innerHTML = ""
+
+
+            if (data.logs.length === 0) {
+
+                logsBox.innerHTML =
+                    "<p>No executions yet...</p>"
+            }
+
+
+            data.logs.forEach(log => {
+
+                logsBox.innerHTML += `
+
+                    <div class="log-card">
+
+                        <p>
+                            <b>Function:</b>
+                            ${log.function}
+                        </p>
+
+                        <p>
+                            <b>Status:</b>
+                            ${log.returncode}
+                        </p>
+
+                        <p>
+                            <b>Output:</b>
+                            ${log.stdout}
+                        </p>
+
+                        <p>
+                            <b>Error:</b>
+                            ${log.stderr}
+                        </p>
+
+                    </div>
+
+                `
+            })
+
+
+            //LIVE RUNTIME EVENTS
+            const containersBox =
+                document.getElementById(
+                    "containers-box"
+                )
+
+            containersBox.innerHTML = ""
+
+
+            if (data.events.length === 0) {
+
+                containersBox.innerHTML =
+                    "<p>No runtime activity yet...</p>"
+            }
+
+
+            data.events.forEach(event => {
+
+                containersBox.innerHTML += `
+
+                    <div class="container-card">
+
+                        <p>
+                            <b>Container:</b>
+                            ${event.container}
+                        </p>
+
+                        <p>
+                            <b>Runtime:</b>
+                            ${event.runtime}
+                        </p>
+
+                        <p>
+                            <b>Status:</b>
+
+                            ${
+                                event.status === "RUNNING"
+
+                                ? "<span class='running'>RUNNING</span>"
+
+                                : "<span class='destroyed'>DESTROYED</span>"
+                            }
+
+                        </p>
+
+                    </div>
+
+                `
+            })
+        }
+
+
+        //execute function without reload
+        async function executeFunction(filename) {
+
+            await fetch(
+                `/execute/${filename}`
+            )
+
+            updateDashboard()
+        }
+
+
+        //upload function without reload
+        document.getElementById(
+            "upload-form"
+        ).addEventListener(
+
+            "submit",
+
+            async function(event) {
+
+                event.preventDefault()
+
+                const formData = new FormData()
+
+                const fileInput =
+                    document.getElementById(
+                        "file-input"
+                    )
+
+                formData.append(
+                    "file",
+                    fileInput.files[0]
+                )
+
+                await fetch("/deploy", {
+
+                    method: "POST",
+
+                    body: formData
+                })
+
+                updateDashboard()
+            }
+        )
+
+
+        //refresh dashboard every second
+        setInterval(
+            updateDashboard,
+            1000
+        )
+
+
+        //initial load
+        updateDashboard()
+
+    </script>
 
 </body>
 

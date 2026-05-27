@@ -6,39 +6,63 @@ import os #file paths
 #function for exec
 #uploads user functuiob inside docker container
 def run_function(filepath):
+
     container_name = f"faas-{uuid.uuid4().hex[:8]}" # takes only 8 chars
 
-#command build (docker as python list)
 
+    #command build (docker as python list)
     command = [
+
         "docker", #docker executable
+
         "run", #run a new container
+
         "--rm", #delete container after execution
+
         "--name",
         container_name,
 
-        #mount in container
+
+        #mount uploaded function in container
         "-v",
         f"{os.path.abspath(filepath)}:/app/function.py",
 
+
+        #mount persistent storage
+        "-v",
+        "C:/Users/Gail/Desktop/Outputs:/app/outputs",
+
+
         #create isolated python environmnet
-        "python:3.11",
+        "dokifass-runtime",
+
 
         #run uploaded python function
         "python",
+
         "/app/function.py" #filepath inside container
 
     ]
+
+
     #execute docker command
     result = subprocess.run(
+
         command,
-        capture_output =True,
+
+        capture_output=True,
+
         text=True
     )
-    #return execution results 
+
+
+    #return execution results
     return {
-        "stdout":result.stdout, #normal program output
+
+        "stdout": result.stdout, #normal program output
+
         "stderr": result.stderr, #error output
+
         "returncode": result.returncode # status code
 
     }

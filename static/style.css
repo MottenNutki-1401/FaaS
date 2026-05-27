@@ -1,170 +1,190 @@
-/* Whole page */
+/* static/style.css */
+
 body {
 
-    background: #0f172a;
+    margin: 0;
+
+    padding: 0;
+
+    background: #020617;
 
     color: white;
 
     font-family: Arial, sans-serif;
-
-    padding: 40px;
 }
 
 
-/* Main title */
+/*layout*/
+.main-container {
+
+    display: flex;
+
+    min-height: 100vh;
+}
+
+
+/*left panel*/
+.left-panel {
+
+    flex: 1;
+
+    padding: 30px;
+}
+
+
+/*right panel*/
+.right-panel {
+
+    width: 500px;
+
+    padding: 30px;
+
+    background: #0f172a;
+
+    border-left: 2px solid #1e293b;
+
+    overflow-y: auto;
+}
+
+
+/*titles*/
 h1 {
 
-    color: #38bdf8;
-
-    font-size: 45px;
-
-    margin-bottom: 10px;
-
-    text-shadow:
-        0 0 10px #38bdf8;
-}
-
-
-/* Section titles */
-h2 {
+    font-size: 50px;
 
     color: #c084fc;
-
-    margin-top: 40px;
 }
 
 
-/* Upload form */
-form {
+h2 {
 
-    background: #1e293b;
+    color: #38bdf8;
+}
+
+
+/*glass cards*/
+.glass-box {
+
+    background: rgba(30, 41, 59, 0.8);
+
+    border: 1px solid #334155;
+
+    border-radius: 16px;
 
     padding: 20px;
 
-    border-radius: 15px;
+    margin-bottom: 25px;
 
-    width: 400px;
-
-    box-shadow:
-        0 0 20px rgba(56, 189, 248, 0.3);
+    backdrop-filter: blur(10px);
 }
 
 
-/* File input */
-input[type="file"] {
+/*forms*/
+form {
 
-    margin-bottom: 15px;
+    display: flex;
 
-    color: white;
+    flex-direction: column;
+
+    gap: 15px;
 }
 
 
-/* Buttons */
+/*buttons*/
 button {
 
     background: #38bdf8;
 
     border: none;
 
-    padding: 12px 20px;
+    padding: 12px;
 
     border-radius: 10px;
 
-    color: black;
-
-    font-weight: bold;
-
     cursor: pointer;
 
-    transition: 0.3s;
+    font-weight: bold;
 }
 
 
-/* Hover effect */
-button:hover {
-
-    background: #7dd3fc;
-
-    transform: scale(1.05);
-}
-
-
-/* Function cards */
+/*function cards*/
 .function-card {
 
-    background: #1e293b;
+    background: #111827;
 
     padding: 15px;
 
     border-radius: 12px;
 
-    margin-top: 15px;
-
-    width: 400px;
-
-    box-shadow:
-        0 0 15px rgba(192, 132, 252, 0.2);
-}
-
-
-/* Execute link */
-a {
-
-    color: #38bdf8;
-
-    text-decoration: none;
-
-    font-weight: bold;
-}
-
-
-a:hover {
-
-    color: #7dd3fc;
-}
-
-
-/* Divider */
-hr {
-
-    border: 1px solid #334155;
-
-    margin-top: 30px;
-}
-/*logs */
-/* Dashboard layout */
-.dashboard-layout {
+    margin-bottom: 15px;
 
     display: flex;
 
-    gap: 30px;
+    justify-content: space-between;
 
-    align-items: flex-start;
+    align-items: center;
 }
 
 
-/* Execution log cards */
+/*logs*/
 .log-card {
 
     background: #111827;
 
-    border-left: 4px solid #38bdf8;
-
     padding: 15px;
-
-    margin-top: 15px;
-
-    width: 350px;
 
     border-radius: 12px;
 
-    box-shadow:
-        0 0 15px rgba(56, 189, 248, 0.2);
+    margin-bottom: 15px;
+
+    border-left: 4px solid #38bdf8;
 }
 
 
-/* Log text */
-.log-card p {
+/*docker terminal*/
+#containers-box {
 
-    margin: 8px 0;
+    white-space: pre-wrap;
+
+    font-family: monospace;
+
+    color: #38bdf8;
+}
+
+
+/*running status*/
+.running {
+
+    color: #4ade80;
+
+    font-weight: bold;
+
+    animation: pulse 1s infinite;
+}
+
+
+/*idle status*/
+.idle {
+
+    color: #94a3b8;
+}
+
+
+/*pulse animation*/
+@keyframes pulse {
+
+    0% {
+
+        opacity: 1;
+    }
+
+    50% {
+
+        opacity: 0.4;
+    }
+
+    100% {
+
+        opacity: 1;
+    }
 }
