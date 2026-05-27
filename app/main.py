@@ -27,6 +27,8 @@ templates = Jinja2Templates(
 )
 
 
+execution_logs = [] #excec logs for monitoring dashboard
+
 #this wjhere uploaded functions be stored
 FUNCTIONS_DIR = "functions"
 
@@ -54,7 +56,8 @@ async def home(request: Request):
 
         #data sent to template
         {
-            "files": files # data sent to template
+            "files": files, # data sent to template
+            "logs": execution_logs #logs view yeah
         }
 
     )
@@ -110,6 +113,19 @@ async def execute_function(filename: str):
     #run uploaded function....
     #trigger doc container/funct .exec/container deletion kaboom
     result = run_function(filepath)
+
+    #save execution logs
+    execution_logs.append({
+
+        "function": filename,
+
+        "stdout": result["stdout"],
+
+        "stderr": result["stderr"],
+
+        "returncode": result["returncode"]
+
+    })
 
     #return .exec output logs
     return result

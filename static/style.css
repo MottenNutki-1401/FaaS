@@ -131,3 +131,40 @@ hr {
 
     margin-top: 30px;
 }
+/*logs */
+/* Dashboard layout */
+.dashboard-layout {
+
+    display: flex;
+
+    gap: 30px;
+
+    align-items: flex-start;
+}
+
+
+/* Execution log cards */
+.log-card {
+
+    background: #111827;
+
+    border-left: 4px solid #38bdf8;
+
+    padding: 15px;
+
+    margin-top: 15px;
+
+    width: 350px;
+
+    border-radius: 12px;
+
+    box-shadow:
+        0 0 15px rgba(56, 189, 248, 0.2);
+}
+
+
+/* Log text */
+.log-card p {
+
+    margin: 8px 0;
+}

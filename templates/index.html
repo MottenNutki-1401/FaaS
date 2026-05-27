@@ -44,6 +44,46 @@
     <hr>
 
     <h2>Uploaded Functions</h2>
+    <hr>
+
+<div class="dashboard-layout">
+
+    <!-- LEFT SIDE -->
+    <div>
+
+        <h2>Execution Monitor</h2>
+
+        {% for log in logs %}
+
+            <div class="log-card">
+
+                <p>
+                    <b>Function:</b>
+                    {{ log.function }}
+                </p>
+
+                <p>
+                    <b>Status Code:</b>
+                    {{ log.returncode }}
+                </p>
+
+                <p>
+                    <b>Output:</b>
+                    {{ log.stdout }}
+                </p>
+
+                <p>
+                    <b>Error:</b>
+                    {{ log.stderr }}
+                </p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>
 
     <!-- Loop through uploaded functions -->
     {% for file in files %}
