@@ -38,9 +38,11 @@ def run_function(filepath):
 
 
         #run uploaded python function
-        "python",
+        "sh",
 
-        "/app/function.py" #filepath inside container
+        "-c",
+
+        "python /app/function.py && sleep 5"
 
     ]
 
